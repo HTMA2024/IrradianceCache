@@ -1,0 +1,16 @@
+{
+    "name": "IrradianceCacheSystem",
+    "rootNamespace": "IrradianceCacheSystem",
+    "references": [
+        "GUID:a058d812c5cf52b469915949a50b24a6"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

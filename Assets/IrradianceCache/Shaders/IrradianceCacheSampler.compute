@@ -1,0 +1,42 @@
+#pragma kernel CSMain
+#pragma kernel CSBatchSample
+
+#include "IrradianceCache.hlsl"
+
+// 输入/输出缓冲区
+RWStructuredBuffer<float4> _Results;        // 采样结果 (RGB + nodeIndex)
+StructuredBuffer<float4> _SamplePositions;  // 采样位置 (XYZ + unused)
+StructuredBuffer<float4> _SampleNormals;    // 采样法线 (XYZ + unused)
+
+int _SampleCount;
+
+// 单点采样内核
+[numthreads(1, 1, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+    float3 worldPos = _SamplePositions[0].xyz;
+    float3 normal = normalize(_SampleNormals[0].xyz);
+
+    float3 color = SampleIrradianceCache(worldPos, normal);
+    int nodeIndex = QueryOctreeNode(worldPos);
+
+    _Results[0] = float4(color, (float)nodeIndex);
+}
+
+// 批量采样内核
+[numthreads(64, 1, 1)]
+void CSBatchSample(uint3 id : SV_DispatchThreadID)
+{
+    uint index = id.x;
+
+    if (index >= (uint)_SampleCount)
+        return;
+
+    float3 worldPos = _SamplePositions[index].xyz;
+    float3 normal = normalize(_SampleNormals[index].xyz);
+
+    float3 color = SampleIrradianceCache(worldPos, normal);
+    int nodeIndex = QueryOctreeNode(worldPos);
+
+    _Results[index] = float4(color, (float)nodeIndex);
+}

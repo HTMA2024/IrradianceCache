@@ -1,0 +1,19 @@
+{
+    "name": "IrradianceCacheSystem.Editor",
+    "rootNamespace": "IrradianceCacheSystem.Editor",
+    "references": [
+        "IrradianceCacheSystem",
+        "Unity.DemoTeam.MeshToSDF"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
