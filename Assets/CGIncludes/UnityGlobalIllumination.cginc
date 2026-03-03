@@ -12,6 +12,39 @@
 #endif
 //</FTRACEV1.0>
 
+// ============================================================================
+// IrradianceCache Integration for Dynamic Objects
+// 自动检测是否有有效的 IrradianceCache 数据，无数据时回退到 Unity SH
+// ============================================================================
+#include "Assets/IrradianceCache/Shaders/UniformGridLightProbeMulti.hlsl"
+
+// 采样 IrradianceCache，如果不在任何 Volume 内则返回 false
+inline bool TrySampleIrradianceCache(float3 worldPos, half3 normalWorld, out half3 outColor)
+{
+    outColor = half3(0, 0, 0);
+    
+    // 检查是否有有效的 Volume 数据
+    if (_UseMultiVolumeMode && _ActiveVolumeCount > 0)
+    {
+        float totalWeight;
+        int volumeCount;
+        float3 color = SampleMultiGridLightProbe(worldPos, normalWorld, totalWeight, volumeCount);
+        if (totalWeight > 0.001)
+        {
+            outColor = (half3)color;
+            return true;
+        }
+    }
+    else if (_OctreeNodeCount > 0 && IsInsideVolume(worldPos))
+    {
+        float3 color = SampleGridLightProbe(worldPos, normalWorld);
+        outColor = (half3)color;
+        return true;
+    }
+    
+    return false;
+}
+
 #ifndef UNITY_GLOBAL_ILLUMINATION_INCLUDED
 #define UNITY_GLOBAL_ILLUMINATION_INCLUDED
 
@@ -114,7 +147,16 @@ inline UnityGI UnityGI_Base(UnityGIInput data, half occlusion, half3 normalWorld
     o_gi.light.color *= data.atten;
 
     #if UNITY_SHOULD_SAMPLE_SH
-        o_gi.indirect.diffuse = ShadeSHPerPixel(normalWorld, data.ambient, data.worldPos);
+        // IrradianceCache Integration: 优先使用 UniformGrid IrradianceCache，无数据时回退到 Unity SH
+        half3 irradianceCacheColor;
+        if (TrySampleIrradianceCache(data.worldPos, normalWorld, irradianceCacheColor))
+        {
+            o_gi.indirect.diffuse = irradianceCacheColor;
+        }
+        else
+        {
+            o_gi.indirect.diffuse = ShadeSHPerPixel(normalWorld, data.ambient, data.worldPos);
+        }
     #endif
 
     #if defined(LIGHTMAP_ON)

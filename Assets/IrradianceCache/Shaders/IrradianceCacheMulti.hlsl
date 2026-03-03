@@ -340,7 +340,7 @@ float3 SampleOctreeVolumeLightingDirectionWeighted(float3 worldPos, float3 world
     float totalWeight = 0.0;
 
     [unroll]
-    for (int i = 0; i < MAX_VOLUME_COUNT; i++)
+    for (int i = 0; i < 8; i++)
     {
         // 4.1 计算三线性权重
         float3 cornerBit = float3(i & 1, (i >> 1) & 1, (i >> 2) & 1);
@@ -405,7 +405,7 @@ float3 SampleOctreeVolumeLightingDirectionWeightedWithBlending(float3 worldPos, 
     float totalWeight = 0.0;
 
     [unroll]
-    for (int i = 0; i < MAX_VOLUME_COUNT; i++)
+    for (int i = 0; i < 8; i++)
     {
         float3 cornerBit = float3(i & 1, (i >> 1) & 1, (i >> 2) & 1);
         float triWeight =
@@ -480,7 +480,7 @@ float3 SampleOctreeVolumeLightingDirectionWeightedWithBlending(float3 worldPos, 
                 float xNeighborTotalWeight = 0.0;
 
                 [unroll]
-                for (int j = 0; j < MAX_VOLUME_COUNT; j++)
+                for (int j = 0; j < 8; j++)
                 {
                     float3 cBit = float3(j & 1, (j >> 1) & 1, (j >> 2) & 1);
                     float tW =
@@ -538,7 +538,7 @@ float3 SampleOctreeVolumeLightingDirectionWeightedWithBlending(float3 worldPos, 
                 float yNeighborTotalWeight = 0.0;
 
                 [unroll]
-                for (int j = 0; j < MAX_VOLUME_COUNT; j++)
+                for (int j = 0; j < 8; j++)
                 {
                     float3 cBit = float3(j & 1, (j >> 1) & 1, (j >> 2) & 1);
                     float tW =
@@ -596,7 +596,7 @@ float3 SampleOctreeVolumeLightingDirectionWeightedWithBlending(float3 worldPos, 
                 float zNeighborTotalWeight = 0.0;
 
                 [unroll]
-                for (int j = 0; j < MAX_VOLUME_COUNT; j++)
+                for (int j = 0; j < 8; j++)
                 {
                     float3 cBit = float3(j & 1, (j >> 1) & 1, (j >> 2) & 1);
                     float tW =

@@ -1,7 +1,7 @@
 #ifndef IRRADIANCE_CACHE_GLOBAL
 #define IRRADIANCE_CACHE_GLOBAL
 
-#define MAX_VOLUME_COUNT 8
+#define MAX_VOLUME_COUNT 64
 
 // ============================================================================
 // UniformGridLightProbe.hlsl

@@ -15,7 +15,7 @@ namespace IrradianceCacheSystem
         /// <summary>
         /// 最大支持的 Volume 数量
         /// </summary>
-        public const int MaxVolumeCount = 8;
+        public const int MaxVolumeCount = 64;
 
         [Tooltip("是否自动重建合并 Buffer")]
         public bool autoRebuild = true;

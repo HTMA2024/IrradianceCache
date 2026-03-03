@@ -98,7 +98,7 @@ float3 SampleVolumeLightingDirectionWeighted(
     float totalWeight = 0.0;
 
     [unroll]
-    for (int i = 0; i < MAX_VOLUME_COUNT; i++)
+    for (int i = 0; i < 8; i++)
     {
         float3 cornerBit = float3(i & 1, (i >> 1) & 1, (i >> 2) & 1);
         float triWeight =
