@@ -201,6 +201,14 @@ namespace IrradianceCacheSystem.Editor
                 volume.UploadToGPU();
             }
             GUI.backgroundColor = Color.white;
+
+            // Refresh Light Probe Group List Button
+            GUI.backgroundColor = new Color(0.5f, 0.8f, 1f);
+            if (GUILayout.Button("Refresh LPG List", GUILayout.Height(30)))
+            {
+                RefreshLightProbeGroupList(volume);
+            }
+            GUI.backgroundColor = Color.white;
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.HelpBox(
@@ -728,15 +736,24 @@ namespace IrradianceCacheSystem.Editor
                 // 保存资产
                 if (createNew)
                 {
-                    string path = EditorUtility.SaveFilePanelInProject(
-                        "Save Light Probe Data",
-                        "IrradianceCacheData",
-                        "asset",
-                        "Save baked light probe data"
-                    );
-
+                    string path = GetDefaultBakeDataPath(volume);
                     if (!string.IsNullOrEmpty(path))
                     {
+                        // 确保 Lighting 文件夹存在
+                        string directory = System.IO.Path.GetDirectoryName(path);
+                        if (!AssetDatabase.IsValidFolder(directory))
+                        {
+                            string parentDir = System.IO.Path.GetDirectoryName(directory);
+                            string folderName = System.IO.Path.GetFileName(directory);
+                            AssetDatabase.CreateFolder(parentDir, folderName);
+                        }
+
+                        // 如果已有同名文件，先删除再创建（覆写）
+                        if (AssetDatabase.LoadAssetAtPath<IrradianceCacheData>(path) != null)
+                        {
+                            AssetDatabase.DeleteAsset(path);
+                        }
+
                         AssetDatabase.CreateAsset(data, path);
                         volume.bakedData = data;
                         EditorUtility.SetDirty(volume);
@@ -775,6 +792,57 @@ namespace IrradianceCacheSystem.Editor
             {
                 EditorUtility.ClearProgressBar();
             }
+        }
+
+        /// <summary>
+        /// 获取 Bake 数据的默认保存路径：场景所在文件夹/Lighting/IrradianceCacheData_{物体名}.asset
+        /// </summary>
+        private string GetDefaultBakeDataPath(IrradianceCache volume)
+        {
+            // 获取当前场景路径
+            string scenePath = volume.gameObject.scene.path;
+            if (string.IsNullOrEmpty(scenePath))
+            {
+                // 场景未保存，回退到弹窗选择
+                return EditorUtility.SaveFilePanelInProject(
+                    "Save Light Probe Data",
+                    "IrradianceCacheData",
+                    "asset",
+                    "Save baked light probe data"
+                );
+            }
+
+            string sceneDir = System.IO.Path.GetDirectoryName(scenePath);
+            string lightingDir = System.IO.Path.Combine(sceneDir, "Lighting").Replace("\\", "/");
+            string fileName = $"IrradianceCacheData_{volume.gameObject.name}.asset";
+            return $"{lightingDir}/{fileName}";
+        }
+
+        /// <summary>
+        /// 刷新 LightProbeGroup 列表：收集场景中所有 LightProbeGroup 并填充到列表
+        /// </summary>
+        private void RefreshLightProbeGroupList(IrradianceCache volume)
+        {
+            LightProbeGroup[] allGroups = Object.FindObjectsOfType<LightProbeGroup>();
+
+            Undo.RecordObject(volume, "Refresh Light Probe Group List");
+
+            if (volume.lightProbeGroupList == null)
+            {
+                volume.lightProbeGroupList = new List<LightProbeGroup>();
+            }
+            else
+            {
+                volume.lightProbeGroupList.Clear();
+            }
+
+            foreach (var group in allGroups)
+            {
+                volume.lightProbeGroupList.Add(group);
+            }
+
+            EditorUtility.SetDirty(volume);
+            Debug.Log($"[IrradianceCacheEditor] Refreshed LightProbeGroup list: found {allGroups.Length} group(s) in scene.");
         }
 
         private void OnSceneGUI()
