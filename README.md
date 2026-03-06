@@ -15,9 +15,9 @@ Both modes share the same `OctreeNode` data structure and SH trilinear interpola
 
 ## Showcase
 
-![IrradianceCache](assets/github-repo-images/IrradianceCache/IrradianceCache.jpg)
+![IrradianceCache](Images/IrradianceCache.jpg)
 
-![Overview](assets/github-repo-images/IrradianceCache/Overview.jpg)
+![Overview](Images/Overview.jpg)
 
 ## Features
 
