@@ -1,4 +1,6 @@
 #ifndef UNITY_STANDARD_PARTICLE_INSTANCING_INCLUDED
+// Upgrade NOTE: excluded shader from OpenGL ES 2.0 because it uses non-square matrices
+#pragma exclude_renderers gles
 #define UNITY_STANDARD_PARTICLE_INSTANCING_INCLUDED
 
 #if defined(UNITY_PROCEDURAL_INSTANCING_ENABLED) && !defined(SHADER_TARGET_SURFACE_ANALYSIS)
