@@ -192,7 +192,7 @@ float3 SampleMultiGridLightProbe(float3 worldPos, float3 worldNormal,
 
         if (weight > 0.0)
         {
-            float3 volumeColor = SampleVolumeLightingDirectionWeighted(worldPos, worldNormal, meta);
+            float3 volumeColor = SampleVolumeLighting(worldPos, worldNormal, meta);
 
             // 优先级加权 (priority 0-100 映射到 1.0-2.0)
             float priorityWeight = 1.0 + (float)meta.priority / 100.0;
@@ -247,7 +247,7 @@ float3 SampleGridLightProbeAuto(float3 worldPos, float3 worldNormal)
     {
         if (IsInsideVolume(worldPos))
         {
-            return SampleGridLightProbeDirectionWeighted(worldPos, worldNormal);
+            return SampleGridLightProbe(worldPos, worldNormal);
         }
 
         if (_EnableSkyboxFallback)
